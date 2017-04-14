@@ -19,23 +19,25 @@ def hough_big_circles(image):
                 if circles[0][i][1] < 1400:
                     circles = np.delete(circles[0],i,0)
                     circles = np.expand_dims(circles, axis=0)
-                    print circles
+                    #print circles
             except:
-                print 'from debug', circles
+                pass
+                #print 'from debug', circles
     # 253,242, 230, 216, 195
-    try:
-        if circles[0][0][0] > circles[0][1][0]:
-            circles[0][0][0], circles[0][1][0] = circles[0][1][0], circles[0][0][0]
-            circles[0][0][1], circles[0][1][1] = circles[0][1][1], circles[0][0][1]
-            circles[0][0][2], circles[0][1][2] = circles[0][1][2], circles[0][0][2]
-    except:
-        print 'from debug:',circles
+    #try:
+    if circles[0][0][0] > circles[0][1][0]:
+        circles[0][0][0], circles[0][1][0] = circles[0][1][0], circles[0][0][0]
+        circles[0][0][1], circles[0][1][1] = circles[0][1][1], circles[0][0][1]
+        circles[0][0][2], circles[0][1][2] = circles[0][1][2], circles[0][0][2]
+    #except:
+        #pass
+        #print 'from debug:',circles
     return circles
 
 def create_look_up(circles):
     # ensure at least some circles were found
     if circles is not None:
-        print 'true'
+        #print 'true'
     	# convert the (x, y) coordinates and radius of the circles to integers
         circles = np.round(circles[0, :]).astype("int")
     	# loop over the (x, y) coordinates and radius of the circles
@@ -78,7 +80,7 @@ def create_look_up(circles):
 def draw_circles(image, circles):
     # ensure at least some circles were found
     if circles is not None:
-        print 'true'
+        #print 'true'
     	# convert the (x, y) coordinates and radius of the circles to integers
         circles = np.round(circles[0, :]).astype("int")
     	# loop over the (x, y) coordinates and radius of the circles
@@ -115,7 +117,7 @@ def draw_circles(image, circles):
 def remove_unwanted_circles(circles):
     # ensure at least some circles were found
     if circles is not None:
-        print 'true'
+        #print 'true'
     	# convert the (x, y) coordinates and radius of the circles to integers
         #circles = np.round(circles[0, :]).astype("int")
     	# loop over the (x, y) coordinates and radius of the circles
@@ -211,7 +213,7 @@ for img_index, img_name in enumerate(os.listdir(folder_path)):
     if img_index == 5000000000000:
         break
 
-    print img_index
+    print 'Image_number: ',img_index
 
     # detect circles in the image
     image = cv2.imread(img_path)
@@ -243,8 +245,8 @@ for img_index, img_name in enumerate(os.listdir(folder_path)):
     rows, cols, _ = image.shape
     c = (200) - (circles[0][0][0])
     d = (1350) - (circles[0][0][1])
-    print 'd:', d
-    print 'c:', c
+    #print 'd:', d
+    #print 'c:', c
     M = np.float32([[1,0,(c)/2],[0,1,(d)/2]])
 
     image = cv2.warpAffine(image,M,(cols,rows))
@@ -259,7 +261,6 @@ for img_index, img_name in enumerate(os.listdir(folder_path)):
     edges_2 = edges_2[525:1250, 80:1075]
 
     edges_2 = cv2.Canny(edges_2,100,110)
-
 
     ############################################################################
     # small circles:
@@ -305,7 +306,7 @@ for img_index, img_name in enumerate(os.listdir(folder_path)):
         s = 7
         x = d
 
-        print 'd:', d
+        #print 'd:', d
 
         if(img_index == -1 or True and False ):
             output_2 = output.copy()
@@ -321,7 +322,7 @@ for img_index, img_name in enumerate(os.listdir(folder_path)):
         #print 'c:', c
 
         d_2 = e**(-0.5*(float(d-m)/s)**2) * d
-        print 'd_2 before:', d_2
+        #print 'd_2 before:', d_2
         if abs(d_2) < 0.0000009:
             d_2 = e**(-0.5*(float(d-m)/s)**2) * d * 10000000
         if abs(d_2) < 0.000009:
@@ -334,7 +335,7 @@ for img_index, img_name in enumerate(os.listdir(folder_path)):
             d_2 = e**(-0.5*(float(d-m)/s)**2) * d * 1000
         if abs(d_2) < 0.09:
             d_2 = e**(-0.5*(float(d-m)/s)**2) * d * 100
-        print 'd_2:', d_2
+        #print 'd_2:', d_2
 
 
         M = np.float32([[1,0,0],[0,1,(d_2)/2]])
@@ -429,11 +430,15 @@ for img_index, img_name in enumerate(os.listdir(folder_path)):
 
     answer = track_answer(circles)
     answers[img_name] = answer
+
+    """
     for i in range(0,45):
         try:
-            print 'Q'+str(i+1)+':',answer['Q'+str(i+1)]
+            pass
+            #print 'Q'+str(i+1)+':',answer['Q'+str(i+1)]
         except:
             pass
-            
+    """
+
 with open('answers.txt', 'w') as outfile:
     json.dump(answers, outfile)
