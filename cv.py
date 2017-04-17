@@ -60,10 +60,10 @@ def create_look_up(circles):
             elif( (x>90 and x<=145) or (x>420 and x<476) or (x>750 and x<800) ): # A answer
                 #cv2.circle(image, (x, y), r, (0, 0, 255), 4)
                 look_up[(x,y)] = 'A'
-            elif( (x>150 and x<190 ) or (x>480 and x<518) or (x>810 and x<850)): #B answer
+            elif( (x>150 and x<190) or (x>480 and x<518) or (x>810 and x<850)): #B answer
                 #cv2.circle(image, (x, y), r, (255, 0, 255), 4)
                 look_up[(x,y)] = 'B'
-            elif( (x>195 and x<230 ) or (x>525 and x<560) or (x>855 and x<890)): #c answer
+            elif( (x>195 and x<230) or (x>525 and x<560) or (x>855 and x<890)): #c answer
                 #cv2.circle(image, (x, y), r, (255, 255, 0), 4)
                 look_up[(x,y)] = 'C'
             elif( (x>235 and x<290 ) or (x>565 and x<620) or (x>895)): #D answer
@@ -130,13 +130,13 @@ def remove_unwanted_circles(circles):
     		# corresponding to the center of the circle
             #print 'type(circles):', type(circles)
             #print circles
-            if(y>=60-7 and y<=60+7):
+            if(y>=60-10 and y<=60+10):
                 continue
-            elif(x<=90+10):
+            elif(x<=90+15):
                 continue
-            elif(x<=418+10 and x>=313+10):
+            elif(x<=418+15 and x>=313-10):
                 continue
-            elif(x<=747+10 and x>=644+10):
+            elif(x<=747+15 and x>=644-10):
                 continue
             else:
                 new_circles.append(circles[0][i])
@@ -265,7 +265,7 @@ for img_index, img_name in enumerate(os.listdir(folder_path)):
     ############################################################################
     # small circles:
     circles = cv2.HoughCircles(edges_2,cv2.HOUGH_GRADIENT,1,minDist=35,
-                                param1=10,param2=5,minRadius=5,maxRadius=10)
+                                param1=110,param2=5,minRadius=5,maxRadius=10)
     ############################################################################
 
     top_circles = get_top_circles(circles, 55)
@@ -282,9 +282,15 @@ for img_index, img_name in enumerate(os.listdir(folder_path)):
     output = rt.rotate_bound(output,-1 * theta)
     edges_2 = rt.rotate_bound(edges_2,-1 * theta)
 
+    edges_2 = cv2.GaussianBlur(edges_2,(5,5),0)
+    edges_2 = cv2.Canny(edges_2,100,110)
+    edges_2 = cv2.medianBlur(edges_2,1)
+
+
+
     d = 0
     circles = cv2.HoughCircles(edges_2,cv2.HOUGH_GRADIENT,1,minDist=35,
-                                param1=10,param2=5,minRadius=7,maxRadius=10)
+                                param1=110,param2=4,minRadius=6,maxRadius=10)
 
     while(True): # Translation process
 
@@ -317,7 +323,7 @@ for img_index, img_name in enumerate(os.listdir(folder_path)):
             plt.show()
 
 
-        if(abs(d)<2):
+        if(abs(d)<3):
             break
         #print 'c:', c
 
@@ -424,8 +430,8 @@ for img_index, img_name in enumerate(os.listdir(folder_path)):
     plt.show()
     """
 
-    #vis = np.concatenate((image, output), axis=1) #Concatenate before and after image
-    vis = output
+    vis = np.concatenate((image, output), axis=1) #Concatenate before and after image
+    #vis = output
     cv2.imwrite('out/'+ str(img_name) +'.png',vis)
 
     answer = track_answer(circles)
