@@ -57,16 +57,16 @@ def create_look_up(circles):
             elif(x<=747+7 and x>=644+7):
                 #cv2.circle(image, (x, y), r, (255, 0, 0), 4)
                 pass
-            elif( (x>90 and x<=145) or (x>420 and x<476) or (x>750 and x<800) ): # A answer
+            elif( (x>=90 and x<=145) or (x>=420 and x<=476) or (x>=750 and x<=807) ): # A answer
                 #cv2.circle(image, (x, y), r, (0, 0, 255), 4)
                 look_up[(x,y)] = 'A'
-            elif( (x>150 and x<190) or (x>480 and x<518) or (x>810 and x<850)): #B answer
+            elif( (x>=150 and x<=190 ) or (x>=480 and x<=518) or (x>=810 and x<=850)): #B answer
                 #cv2.circle(image, (x, y), r, (255, 0, 255), 4)
                 look_up[(x,y)] = 'B'
-            elif( (x>195 and x<230) or (x>525 and x<560) or (x>855 and x<890)): #c answer
+            elif( (x>=195 and x<=230 ) or (x>=521 and x<=560) or (x>=855 and x<=890)): #c answer
                 #cv2.circle(image, (x, y), r, (255, 255, 0), 4)
                 look_up[(x,y)] = 'C'
-            elif( (x>235 and x<290 ) or (x>565 and x<620) or (x>895)): #D answer
+            elif( (x>=235 and x<=290 ) or (x>=565 and x<=620) or (x>=895)): #D answer
                 #cv2.circle(image, (x, y), r, (0, 255, 255), 4)
                 look_up[(x,y)] = 'D'
             else:
@@ -96,16 +96,16 @@ def draw_circles(image, circles):
                 cv2.circle(image, (x, y), r, (255, 0, 0), 4)
             elif(x<=747+7 and x>=644+7):
                 cv2.circle(image, (x, y), r, (255, 0, 0), 4)
-            elif( (x>90 and x<=145) or (x>420 and x<476) or (x>750 and x<800) ): # A answer
+            elif( (x>=90 and x<=145) or (x>=420 and x<=476) or (x>=750 and x<=807) ): # A answer
                 cv2.circle(image, (x, y), r, (0, 0, 255), 4)
                 look_up[(x,y)] = 'A'
-            elif( (x>150 and x<190 ) or (x>480 and x<518) or (x>810 and x<850)): #B answer
+            elif( (x>=150 and x<=190 ) or (x>=480 and x<=518) or (x>=810 and x<=850)): #B answer
                 cv2.circle(image, (x, y), r, (255, 0, 255), 4)
                 look_up[(x,y)] = 'B'
-            elif( (x>195 and x<230 ) or (x>525 and x<560) or (x>855 and x<890)): #c answer
+            elif( (x>=195 and x<=230 ) or (x>=521 and x<=560) or (x>=855 and x<=890)): #c answer
                 cv2.circle(image, (x, y), r, (255, 255, 0), 4)
                 look_up[(x,y)] = 'C'
-            elif( (x>235 and x<290 ) or (x>565 and x<620) or (x>895)): #D answer
+            elif( (x>=235 and x<=290 ) or (x>=565 and x<=620) or (x>=895)): #D answer
                 cv2.circle(image, (x, y), r, (0, 255, 255), 4)
                 look_up[(x,y)] = 'D'
             else:
@@ -150,10 +150,29 @@ def get_top_circles(circles, threshold):
     # Return list of coordinates of circles above horizontal threshold
     top_circles = []
     for i in range(0,len(circles[0])):
-        if circles[0][i][1] <= threshold :
+        if circles[0][i][1] <= threshold:
             top_circles.append(circles[0][i])
 
     top_circles.sort(key=lambda top_circles:top_circles[:][0])
+
+    try:
+        median_y = top_circles[len(top_circles)/2][1]
+    except:
+        return []
+    if len(top_circles) < 6:
+        return []
+
+    index_to_be_del = []
+    for i in range(0,len(top_circles)):
+        if top_circles[i][1] >= median_y+10 or top_circles[i][1] <= median_y+10:
+            continue
+        else:
+            index_to_be_del.append(i)
+
+    for i in range(0,len(index_to_be_del)):
+        del top_circles[i]
+
+
     return top_circles
 
 def track_answer(circles):
@@ -167,7 +186,11 @@ def track_answer(circles):
         for j in look_up:
             if j[0] < x_1 and j[0] > x_0:
                 if j[1] > upper_bound and j[1] < lower_bound:
-                    answer['Q'+str(i+1)] = look_up[j]
+                    if ('Q'+str(i+1)) in answer:
+                        answer['Q'+str(i+1)] = ''
+                        continue
+                    else:
+                        answer['Q'+str(i+1)] = look_up[j]
                     #answer.append(look_up[j])
         upper_bound = upper_bound + 40
         lower_bound = lower_bound + 40
@@ -180,7 +203,11 @@ def track_answer(circles):
         for j in look_up:
             if j[0] < x_1 and j[0] > x_0:
                 if j[1] > upper_bound and j[1] < lower_bound:
-                    answer['Q'+str(i+1)] = look_up[j]
+                    if ('Q'+str(i+1)) in answer:
+                        answer['Q'+str(i+1)] = ''
+                        continue
+                    else:
+                        answer['Q'+str(i+1)] = look_up[j]
                     #answer.append(look_up[j])
         upper_bound = upper_bound + 40
         lower_bound = lower_bound + 40
@@ -193,7 +220,11 @@ def track_answer(circles):
         for j in look_up:
             if j[0] < x_1 and j[0] > x_0:
                 if j[1] > upper_bound and j[1] < lower_bound:
-                    answer['Q'+str(i+1)] = look_up[j]
+                    if ('Q'+str(i+1)) in answer:
+                        answer['Q'+str(i+1)] = ''
+                        continue
+                    else:
+                        answer['Q'+str(i+1)] = look_up[j]
                     #answer.append(look_up[j])
         upper_bound = upper_bound + 40
         lower_bound = lower_bound + 40
@@ -212,6 +243,11 @@ for img_index, img_name in enumerate(os.listdir(folder_path)):
 
     if img_index == 5000000000000:
         break
+
+    """
+    if img_name != 'S_1_hppscan125.png':
+        continue
+    """
 
     print 'Image_number: ',img_index
 
@@ -286,13 +322,12 @@ for img_index, img_name in enumerate(os.listdir(folder_path)):
     edges_2 = cv2.Canny(edges_2,100,110)
     edges_2 = cv2.medianBlur(edges_2,1)
 
-
-
     d = 0
     circles = cv2.HoughCircles(edges_2,cv2.HOUGH_GRADIENT,1,minDist=35,
-                                param1=110,param2=4,minRadius=6,maxRadius=10)
+                                param1=10,param2=5,minRadius=4,maxRadius=10)
 
     while(True): # Translation process
+
 
         top_circles = get_top_circles(circles,55)
         if len(top_circles) == 0:
@@ -303,18 +338,24 @@ for img_index, img_name in enumerate(os.listdir(folder_path)):
         if(len(top_circles) == 0):
             #print 'len_circles:', 0
             break
+
         sum = 0
         for i in range(0,len(top_circles)):
             sum = sum + top_circles[0][1]
         average_y = sum / len(top_circles)
+
+        top_circles.sort(key=lambda top_circles:top_circles[:][1])
+        average_y = top_circles[len(top_circles)/2][1]
         d = (60) - (average_y)
         m = 10
         s = 7
         x = d
 
+
+
         #print 'd:', d
 
-        if(img_index == -1 or True and False ):
+        if(img_index == -1 or True and False):
             output_2 = output.copy()
             cv2.line(output_2,(20,60),(930,60),(255,0,0),5)
             output_2 = draw_circles(output_2,circles)
@@ -323,7 +364,7 @@ for img_index, img_name in enumerate(os.listdir(folder_path)):
             plt.show()
 
 
-        if(abs(d)<3):
+        if(abs(d)<2):
             break
         #print 'c:', c
 
@@ -346,15 +387,17 @@ for img_index, img_name in enumerate(os.listdir(folder_path)):
 
         M = np.float32([[1,0,0],[0,1,(d_2)/2]])
 
-        image = cv2.warpAffine(image,M,(cols,rows))
-        output = cv2.warpAffine(image,M,(cols,rows))
-        edges_2 = cv2.warpAffine(image,M,(cols,rows))
+        image = cv2.warpAffine(image,M,(cols,rows), borderValue = (255,255,255))
+        output = cv2.warpAffine(image,M,(cols,rows), borderValue = (255,255,255))
+        edges_2 = cv2.warpAffine(image,M,(cols,rows), borderValue = (255,255,255))
         edges_2 = cv2.Canny(output,100,110)
+
 
         for i in range(0,circles.shape[1]): # Translation of detected circles
             circles[0][i][1] = circles[0][i][1] + d_2
 
-        if(img_index == -1 or True and False ):
+
+        if(img_index == -1 or True and False):
             output_2 = output.copy()
             cv2.line(output_2,(20,60),(930,60),(255,0,0),5)
             output_2 = draw_circles(output_2,circles)
@@ -370,7 +413,7 @@ for img_index, img_name in enumerate(os.listdir(folder_path)):
     count = 0
     tmp = []
     for i in range(0,circles.shape[1]): #Normalizing reference_verticle_line
-        if circles[0][i][0] < 95:
+        if circles[0][i][0] <= 97:
             sum = sum + circles[0][i][0]
             count = count + 1
             tmp.append(circles[0][i][0])
